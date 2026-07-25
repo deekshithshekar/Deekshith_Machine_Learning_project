@@ -1,0 +1,50 @@
+# Sonar training config — Watertank-Segmentation dataset
+# Used by YOLOv8m (detection) and SegFormer-B2 (segmentation)
+
+# ── Model ─────────────────────────────────────────────────────────────────────
+# Detection:   use yolov8m.pt  (NOT yolov8m-seg.pt — we train on XML bboxes)
+# Segmentation: handled via src/train.py with SegFormer — this config is for YOLO only
+model: yolov8m.pt
+epochs: 80
+imgsz: 640
+batch: 8
+lr0: 0.001
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 5
+
+# ── Classes ───────────────────────────────────────────────────────────────────
+# 10 debris classes only — background (0) and wall (11) excluded from detection
+nc: 10
+names:
+  - bottle           # mask value 1
+  - can              # mask value 2
+  - chain            # mask value 3
+  - drink-carton     # mask value 4
+  - hook             # mask value 5
+  - propeller        # mask value 6
+  - shampoo-bottle   # mask value 7
+  - standing-bottle  # mask value 8
+  - tire             # mask value 9
+  - valve            # mask value 10
+# wall (mask value 11) is a tank artefact — not debris, excluded from training targets
+
+# ── Preprocessing (applied in FLSDetectionDataset) ────────────────────────────
+clahe_clip_limit: 2.0
+clahe_tile_grid: 8
+gaussian_sigma: 1.0
+
+# ── Loss ─────────────────────────────────────────────────────────────────────
+fl_gamma: 2.0         # focal loss gamma (ultralytics fl_gamma param)
+
+# ── Augmentation ─────────────────────────────────────────────────────────────
+# Conservative — no colour jitter (sonar has no colour information)
+flipud: 0.3
+fliplr: 0.5
+degrees: 15.0
+scale: 0.3
+mosaic: 0.5
+hsv_h: 0.0            # disabled — sonar is grayscale
+hsv_s: 0.0            # disabled
+hsv_v: 0.1            # minor brightness variation only
